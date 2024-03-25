@@ -1,17 +1,15 @@
 const express = require("express");
+const cors = require('cors');
 require('dotenv').config();
+const app = express();
+
+app.use(cors());
 
 const api = require("./api");
-const { logIp } = require("./database/services/Primary");
-const app = express();
 const port = process.env.PORT || 8000;
 
-app.use("/api", api);
 
-app.get("/",(req,res)=>{
-    logIp(req.ip);
-    res.send("hi");
-})
+app.use("/", api);
 
 
 app.listen(8000, () => {
