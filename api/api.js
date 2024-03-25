@@ -6,6 +6,11 @@ router.get('/', (req, res) => {
     res.send('API');
 });
 
+router.post('/book_data', (req, res) => {
+    console.log(req.body)
+    res.send("book logged");
+})
+
 router.get('/health_checkup', (req, res) => {
 
 })
