@@ -13,10 +13,22 @@ exports.logIp = (req) => {
     console.log(query);
     connection.query(query, (err, result, fields) => {
         if (err) {
-            console.log("error in LogIP"+err);
+            console.log("Error in executing logIp:"+err);
             return;
         }
-        console.log("Logged IP");
+        console.log("logIp executed");
+    })
+}
+
+exports.sendBookData = (title,content) => {
+    let query = `INSERT INTO book(book_name,book_content) VALUES ('${title}','${content}');`;
+    console.log(query);
+    connection.query(query, (err, result, fields) => {
+        if (err) {
+            console.log("Error in executing sendBookData:"+err);
+            return;
+        }
+        console.log("sendBookData executed");
     })
 }
 

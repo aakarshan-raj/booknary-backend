@@ -1,4 +1,5 @@
-const express = require('express')
+const express = require('express');
+const { sendBookData } = require('../database/services/Primary');
 const router = express.Router();
 
 
@@ -7,7 +8,8 @@ router.get('/', (req, res) => {
 });
 
 router.post('/book_data', (req, res) => {
-    console.log(req.body)
+    console.log(req.body.body);
+    sendBookData(req.body.body.title,req.body.body.content)
     res.send("book logged");
 })
 
