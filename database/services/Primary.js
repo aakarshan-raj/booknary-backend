@@ -20,8 +20,14 @@ exports.logIp = (req) => {
     })
 }
 
+function sanitizeInput(input) {
+    return input.replace(/'/g, "''");
+}
+
 exports.sendBookData = (title,content) => {
-    let query = `INSERT INTO book(book_name,book_content) VALUES ('${title}','${content}');`;
+    const sanitizedInput = sanitizeInput(content);  // Sanitize
+
+    let query = `INSERT INTO book(book_name,book_content) VALUES ('${title}','${sanitizedInput}');`;
     console.log(query);
     connection.query(query, (err, result, fields) => {
         if (err) {

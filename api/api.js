@@ -14,7 +14,7 @@ router.post('/book_data', (req, res) => {
 })
 
 router.get('/health_checkup', (req, res) => {
-
+    res.send("Health Checkup")
 })
 
 module.exports = router;
