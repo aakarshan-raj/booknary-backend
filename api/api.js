@@ -8,9 +8,14 @@ router.get('/', (req, res) => {
 });
 
 router.post('/book_data', async (req, res) => {
-    console.log(req.body.body);
+    if ((req.body?.book == null) ||
+        (req.body?.book?.title == null) ||
+        (req.body?.book?.content) == null) {
+        return res.status(400).send("Bad Request");
+    }
+
     try {
-        const response = await sendBookData(req.body.body.title, req.body.body.content);
+        const response = await sendBookData(req.body.book.title, req.body.book.content);
         return res.status(response.code).send(response.message);
     }
     catch (error) {
@@ -22,4 +27,4 @@ router.get('/health_checkup', (req, res) => {
     res.send("Health Checkup")
 })
 
-module.exports = router;
+module.exports = router; 

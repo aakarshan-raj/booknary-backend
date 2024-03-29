@@ -26,8 +26,8 @@ function sanitizeInput(input) {
 
 exports.sendBookData = async (title, content) => {
     const sanitizedInput = sanitizeInput(content);  
-
-    let query = `INSERT INTO boofk(book_name,book_content) VALUES ('${title}','${sanitizedInput}');`;
+    // Anaylse the book here
+    let query = `INSERT INTO book(book_name,book_content) VALUES ('${title}','${sanitizedInput}');`;
     console.log(query);
     return new Promise((resolve, reject) => {
         connection.query(query, (err, result, fields) => {
