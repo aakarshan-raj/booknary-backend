@@ -1,5 +1,5 @@
 const connection = require('../connection');
-
+const fs = require('fs');
 
 const parseIp = (req) =>
     (req.headers["x-forwarded-for"] || "").split(",").pop().trim() ||
@@ -24,10 +24,50 @@ function sanitizeInput(input) {
     return input.replace(/'/g, "''");
 }
 
+function removeQuotes(input) {
+    return input.replace(/['"\n]/g, '');
+}
+
+function removeSlashes(input) {
+    return input.replace(/[\/\\]/g, '');
+}
+
+function getBookMeaning(sanitizedInput) {
+
+    const words = sanitizedInput.split(" ");
+    let meanings = new Map();
+    return new Promise((resolve, reject) => {
+        fs.readFile('./dictionary/dictionary.json', 'utf-8', (err, data) => {
+            if (err) {
+                console.log("Error in getBookMeaning " + err);
+                reject("Error in opening Dictionary");
+            }
+            const dictionary = JSON.parse(data);
+            for (let word of words) {
+                if (/^[a-zA-Z]/.test(word)) {     // only get meaning of words
+                    const meaning = dictionary[((word[0].toLowerCase()).charCodeAt(0) - 97)][word.toLowerCase()];
+                    if(meaning)
+                    meanings.set(word, removeSlashes(removeQuotes(meaning))); // will change for simpler words, this will be changed
+                }
+            }
+            resolve(meanings);
+        })
+    })
+
+
+}
+
 exports.sendBookData = async (title, content) => {
-    const sanitizedInput = sanitizeInput(content);  
-    // Anaylse the book here
-    let query = `INSERT INTO book(book_name,book_content) VALUES ('${title}','${sanitizedInput}');`;
+    const sanitizedInput = sanitizeInput(content);
+    let meaning;
+    try {
+        meaning = await getBookMeaning(sanitizedInput);
+        meaning = JSON.stringify(Object.fromEntries(meaning));
+    }
+    catch (error) {
+        console.log("Error in getBookMeaning " + error);
+    }
+    let query = `INSERT INTO book(book_name,book_content,meaning) VALUES ('${title}','${sanitizedInput}','${meaning}');`;
     console.log(query);
     return new Promise((resolve, reject) => {
         connection.query(query, (err, result, fields) => {
@@ -39,5 +79,6 @@ exports.sendBookData = async (title, content) => {
             resolve({ code: 200, message: "book logged" });
         })
     })
+
 }
 

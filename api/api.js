@@ -19,6 +19,7 @@ router.post('/book_data', async (req, res) => {
         return res.status(response.code).send(response.message);
     }
     catch (error) {
+        console.log(error)
         return res.status(error.code).send(error.message);
     }
 })
