@@ -1,5 +1,5 @@
 const express = require('express');
-const { sendBookData } = require('../database/services/Primary');
+const { sendBookData, getBookData } = require('../database/services/Primary');
 const router = express.Router();
 
 
@@ -17,6 +17,18 @@ router.post('/book_data', async (req, res) => {
     try {
         const response = await sendBookData(req.body.book.title, req.body.book.content);
         return res.status(response.code).send(response.message);
+    }
+    catch (error) {
+        console.log(error)
+        return res.status(error.code).send(error.message);
+    }
+})
+
+router.get('/analysis/:book_id', async (req, res) => {
+    const book_id = req.params.book_id;
+    try {
+        const response = await getBookData(book_id);
+        return res.status(response.code).json(response.message);
     }
     catch (error) {
         console.log(error)

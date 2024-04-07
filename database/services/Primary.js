@@ -76,9 +76,27 @@ exports.sendBookData = async (title, content) => {
                 reject({ code: 500, message: "There is an error" });
             }
             console.log("sendBookData executed");
-            resolve({ code: 200, message: "book logged" });
+            resolve({ code: 200, message: String(result.insertId)});
         })
     })
 
 }
+
+exports.getBookData = async (id) => {
+   
+    let query = `SELECT book_name,meaning FROM book WHERE id=${id};`;
+    console.log(query);
+    return new Promise((resolve, reject) => {
+        connection.query(query, (err, result, fields) => {
+            if (err) {
+                console.log("Error in executing getBookData:" + err);
+                reject({ code: 500, message: "There is an error" });
+            }
+            console.log("sendBookData executed");
+            resolve({ code: 200, message: result});
+        })
+    })
+
+}
+
 
