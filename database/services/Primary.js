@@ -92,6 +92,7 @@ exports.getBookData = async (id) => {
                 console.log("Error in executing getBookData:" + err);
                 reject({ code: 500, message: "There is an error" });
             }
+            result[0].meaning = JSON.parse((result[0].meaning));                    // Text to parse, since JSON type was re-ordering
             console.log("sendBookData executed");
             resolve({ code: 200, message: result});
         })
