@@ -53,7 +53,21 @@ function getBookMeaning(sanitizedInput) {
             resolve(meanings);
         })
     })
+}
 
+async function getLevelInformation(level) {
+    let query = `SELECT level1 FROM level;`;
+    console.log(query);
+    return new Promise((resolve, reject) => {
+        connection.query(query, (err, result, fields) => {
+            if (err) {
+                console.log("Error in executing getLevelInformation:" + err);
+                reject({ code: 500, message: "There is an error" });
+            }
+            console.log("getLevelInformation executed");
+            resolve({ code: 200, message: result });
+        })
+    })
 
 }
 
@@ -87,12 +101,12 @@ exports.getBookData = async (id, level) => {
     let query = `SELECT book_name,meaning FROM book WHERE id=${id};`;
     console.log(query);
     return new Promise((resolve, reject) => {
-        connection.query(query, (err, result, fields) => {
+        connection.query(query, async (err, result, fields) => {
             if (err) {
                 console.log("Error in executing getBookData:" + err);
                 reject({ code: 500, message: "There is an error" });
             }
-            result[0].meaning = filterMeaningByWords((result[0].meaning), level);                    // Text to parse, since JSON type was re-ordering
+            result[0].meaning = await filterMeaningByWords((result[0].meaning), level);                    // Text to parse, since JSON type was re-ordering
             console.log("sendBookData executed");
             resolve({ code: 200, message: result });
         })
@@ -100,8 +114,9 @@ exports.getBookData = async (id, level) => {
 
 }
 
-const filterMeaningByWords = (meaning, level) => {
+const filterMeaningByWords = async (meaning, level) => {
     meaning = JSON.parse(meaning)
-   
+    const data = await getLevelInformation(level);
+    console.log(JSON.parse(data.message[0].level1));
     return meaning;
 }
