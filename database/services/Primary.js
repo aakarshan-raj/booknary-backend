@@ -44,10 +44,10 @@ function getBookMeaning(sanitizedInput) {
             }
             const dictionary = JSON.parse(data);
             for (let word of words) {
-                if (/^[a-zA-Z]/.test(word)) {     // only get meaning of words
+                if (/^[a-zA-Z]{5,}/.test(word)) {           // Regex for word and should have length more than 4
                     const meaning = dictionary[((word[0].toLowerCase()).charCodeAt(0) - 97)][word.toLowerCase()];
-                    if(meaning)
-                    meanings.set(word, removeSlashes(removeQuotes(meaning))); // will change for simpler words, this will be changed
+                    if (meaning)
+                        meanings.set(word, removeSlashes(removeQuotes(meaning))); // will change for simpler words, this will be changed
                 }
             }
             resolve(meanings);
@@ -76,14 +76,14 @@ exports.sendBookData = async (title, content) => {
                 reject({ code: 500, message: "There is an error" });
             }
             console.log("sendBookData executed");
-            resolve({ code: 200, message: String(result.insertId)});
+            resolve({ code: 200, message: String(result.insertId) });
         })
     })
 
 }
 
-exports.getBookData = async (id) => {
-   
+exports.getBookData = async (id, level) => {
+
     let query = `SELECT book_name,meaning FROM book WHERE id=${id};`;
     console.log(query);
     return new Promise((resolve, reject) => {
@@ -92,12 +92,16 @@ exports.getBookData = async (id) => {
                 console.log("Error in executing getBookData:" + err);
                 reject({ code: 500, message: "There is an error" });
             }
-            result[0].meaning = JSON.parse((result[0].meaning));                    // Text to parse, since JSON type was re-ordering
+            result[0].meaning = filterMeaningByWords((result[0].meaning), level);                    // Text to parse, since JSON type was re-ordering
             console.log("sendBookData executed");
-            resolve({ code: 200, message: result});
+            resolve({ code: 200, message: result });
         })
     })
 
 }
 
-
+const filterMeaningByWords = (meaning, level) => {
+    meaning = JSON.parse(meaning)
+   
+    return meaning;
+}
