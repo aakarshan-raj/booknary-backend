@@ -56,7 +56,16 @@ function getBookMeaning(sanitizedInput) {
 }
 
 async function getLevelInformation(level) {
-    let query = `SELECT level1 FROM level;`;
+    let level_string;
+    if (level == 1) {
+        level_string = "level1";
+    } else if (level == 2) {
+        level_string = "level2";
+    }
+    else if (level == 3) {
+        level_string = "level3";
+    }
+    let query = `SELECT ${level_string} FROM level;`;
     console.log(query);
     return new Promise((resolve, reject) => {
         connection.query(query, (err, result, fields) => {
@@ -65,7 +74,8 @@ async function getLevelInformation(level) {
                 reject({ code: 500, message: "There is an error" });
             }
             console.log("getLevelInformation executed");
-            resolve({ code: 200, message: result });
+            const values = result.map(row => Object.values(row)[0]);
+            resolve(values);
         })
     })
 
@@ -116,7 +126,13 @@ exports.getBookData = async (id, level) => {
 
 const filterMeaningByWords = async (meaning, level) => {
     meaning = JSON.parse(meaning)
-    const data = await getLevelInformation(level);
-    console.log(JSON.parse(data.message[0].level1));
+    let data = await getLevelInformation(level);
+    data = JSON.parse(data);
+    for (let key in meaning) {
+        if (data.includes(key)) {
+            console.log(key)
+            delete meaning[key];
+        }
+    }
     return meaning;
 }
